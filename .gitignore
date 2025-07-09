@@ -1,6 +1,7 @@
 # Build outputs
 dist/
 build/
+"distシンプル完成版"/
 
 # macOS system files
 .DS_Store

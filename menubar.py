@@ -15,6 +15,7 @@ class MissionControlApp(rumps.App):
             "Chrome",
             "Safari", 
             "ChatGPT",
+            "Cursor",
             "Finder",
             "Obsidian",
             None,  # 罫線（セパレーター）
@@ -35,51 +36,32 @@ class MissionControlApp(rumps.App):
                 subprocess.run(["open", "-b", "com.apple.expose.front.no-mouse"], check=True)
                 
             except subprocess.CalledProcessError:
-                # それでも失敗した場合はエラー通知
-                rumps.notification(
-                    title="Mission Control",
-                    subtitle="Failed!",
-                    message="Could not launch Mission Control"
-                )
+                # エラーは静かに無視（通知を使わない）
+                pass
     
-    def switch_to_app(self, app_name, bundle_id=None):
+    def switch_to_app(self, app_name):
         """アプリに切り替える（起動中の場合のみ）"""
         try:
-            if bundle_id:
-                # バンドルIDでアプリをアクティブにする
-                result = subprocess.run(
-                    ["osascript", "-e", f'tell application "System Events" to set frontmost of process "{app_name}" to true'],
-                    capture_output=True,
-                    text=True
-                )
-            else:
-                # アプリ名でアクティブにする
-                result = subprocess.run(
-                    ["osascript", "-e", f'tell application "{app_name}" to activate'],
-                    capture_output=True,
-                    text=True
-                )
+            # AppleScriptでアプリをアクティブにする
+            script = f'''
+            tell application "System Events"
+                set appProcess to first process whose name is "{app_name}"
+                set frontmost of appProcess to true
+            end tell
+            '''
             
-            # エラーが発生した場合（アプリが起動していない）
-            if result.returncode != 0:
-                rumps.notification(
-                    title=f"{app_name}",
-                    subtitle="Not Running",
-                    message=f"{app_name} is not currently running"
-                )
-            else:
-                rumps.notification(
-                    title=f"{app_name}",
-                    subtitle="Switched",
-                    message=f"Switched to {app_name}"
-                )
-                
-        except Exception as e:
-            rumps.notification(
-                title=f"{app_name}",
-                subtitle="Error",
-                message=f"Could not switch to {app_name}"
+            result = subprocess.run(
+                ["osascript", "-e", script],
+                capture_output=True,
+                text=True
             )
+            
+            # エラーが発生した場合（アプリが起動していない）は静かに無視
+            # 成功した場合は何もしない（静かに切り替わる）
+            
+        except Exception:
+            # エラーは静かに無視
+            pass
     
     @rumps.clicked("Chrome")
     def switch_to_chrome(self, _):
@@ -95,6 +77,11 @@ class MissionControlApp(rumps.App):
     def switch_to_chatgpt(self, _):
         """ChatGPTに切り替え"""
         self.switch_to_app("ChatGPT")
+    
+    @rumps.clicked("Cursor")
+    def switch_to_cursor(self, _):
+        """Cursorに切り替え"""
+        self.switch_to_app("Cursor")
     
     @rumps.clicked("Finder")
     def switch_to_finder(self, _):

@@ -14,9 +14,9 @@ class MissionControlApp(rumps.App):
             None,  # 罫線（セパレーター）
             "Chrome",
             "Safari", 
+            "Finder",
             "ChatGPT",
             "Cursor",
-            "Finder",
             "Obsidian",
             None,  # 罫線（セパレーター）
             "Quit"
@@ -73,6 +73,11 @@ class MissionControlApp(rumps.App):
         """Safariに切り替え"""
         self.switch_to_app("Safari")
     
+    @rumps.clicked("Finder")
+    def switch_to_finder(self, _):
+        """Finderに切り替え"""
+        self.switch_to_app("Finder")
+    
     @rumps.clicked("ChatGPT")
     def switch_to_chatgpt(self, _):
         """ChatGPTに切り替え"""
@@ -82,11 +87,6 @@ class MissionControlApp(rumps.App):
     def switch_to_cursor(self, _):
         """Cursorに切り替え"""
         self.switch_to_app("Cursor")
-    
-    @rumps.clicked("Finder")
-    def switch_to_finder(self, _):
-        """Finderに切り替え"""
-        self.switch_to_app("Finder")
     
     @rumps.clicked("Obsidian")
     def switch_to_obsidian(self, _):
